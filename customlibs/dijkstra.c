@@ -1,4 +1,4 @@
-#include "parcour_exo1.h"
+#include "dijkstra.h"
 #include "list.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,7 +7,7 @@
    @assigns    cherche un chemin plus court entre s et t
    @ensures    ...
 */
-void parcour(int ** matrix,int s,int t,int n)
+void dijkstra(int ** matrix,int s,int t,int n)
 {
     int i,j,k;
     int min = INF;
@@ -33,10 +33,18 @@ void parcour(int ** matrix,int s,int t,int n)
     /* parcourir n-1 fois , chaque fois on trouve un chemin le plus court*/
     for (i = 0;i < n; i++)
     {
-        min=INF;
+        int max = INF;
+        for (j = 0;j < n ; j++)     /* trouve le chemin le plus long */
+        {
+            if ( flag[j]==0 && dist[j] > max)
+            {
+                max = dist[j];
+            }
+        }
+        min = max;
         for (j = 0;j < n ; j++)     /* trouver le chemin le plus court*/
         {
-            if ( flag[j]==0 && dist[j] < min)
+            if ( flag[j]==0 && dist[j] <= min && dist[j]!=INF)
             {
                 min = dist[j];
                 k = j;
@@ -47,12 +55,18 @@ void parcour(int ** matrix,int s,int t,int n)
         /* mise à jour les chemin les plus court des tous les noeud et stocker le predécesseur pour l'instant*/
         for (j = 0; j < n; j++)
         {
-            if (flag[j]==0 && matrix[k][j]==1 && (min+matrix[k][j]) < dist[j]) /* si flag[j]==0 et dist[k]+matrix[k][j] < dist[j], misq à jour*/
+            if (flag[j]==0 && matrix[k][j]!=INF ) /* si flag[j]==0 et dist[k]+matrix[k][j] < dist[j], misq à jour*/
             {
-               
-                dist[j]=min+matrix[k][j];
-                pred[j]=k;
-              
+                if (dist[j]==INF)
+                {
+                    dist[j]=matrix[k][j]+dist[k];          
+                    pred[j]=k;
+                }
+                else if ( (min+matrix[k][j])< dist[j])
+                {
+                    dist[j]=min+matrix[k][j];
+                    pred[j]=k;
+                }
             }
         }
         
@@ -73,7 +87,5 @@ void parcour(int ** matrix,int s,int t,int n)
     }
 
     print_list(chemin);
+
 }
-
-
-
